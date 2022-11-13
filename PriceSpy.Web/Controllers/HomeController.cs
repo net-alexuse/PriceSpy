@@ -7,28 +7,44 @@ namespace PriceSpy.Web.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly Random _random = new Random();
+        private readonly HtmlReader htmlReader;
+        private readonly XmlHandler xmlHandler;
         
+
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
+            htmlReader = new HtmlReader();
         }
 
-        public IActionResult Index(string searchQuery)
+        public async Task<IActionResult> Index(string searchQuery, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(searchQuery))
             {
                 return View();
             }
-            var tempView = new TemplateViewModel();
-            //tempView.NumberOfResults = _random.Next(1, 6);
-            tempView.NumberOfResults = 10;
-            return View("Results");
+            SampleViewModel sampleViewModel = new SampleViewModel();
+            XmlHandler.Read(sampleViewModel);
+            var turbokResult = await htmlReader.GetTurbokResultsAsync(searchQuery, cancellationToken);
+            var magnitResult = await htmlReader.GetMagnitResultAsync(searchQuery, cancellationToken);
+            var akvilonResult = await htmlReader.GetAkvilonResultAsync(searchQuery, cancellationToken);
+            
+            SampleViewModel.Search = searchQuery;
+
+            sampleViewModel.Sites.Add(turbokResult);
+            sampleViewModel.Sites.Add(magnitResult);
+            sampleViewModel.Sites.Add(akvilonResult);
+            
+            XmlHandler.Search(sampleViewModel, searchQuery);
+            return View("Results", sampleViewModel);
         }
 
-        public IActionResult Privacy()
+        public IActionResult Privacy(string searchQuery)
         {
-            return View();
+            SampleViewModel allShippers = new SampleViewModel();
+            XmlHandler.Read(allShippers);
+            XmlHandler.Search(allShippers, searchQuery);
+            return View("Privacy", allShippers);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

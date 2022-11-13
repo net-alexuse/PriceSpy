@@ -1,58 +1,61 @@
-﻿@model TemplateViewModel
-
+﻿@model SampleViewModel
 @{
     ViewData["Title"] = "Результаты поиска";
+    int i = 0;
 }
-<h5>Результаты поискас сайта 1</h5>
-
-<div class="container" style="overflow-x: scroll; max-width: 100%; padding-top: 20px; padding-bottom: 10px">
-    <div class="row" style="flex-wrap: nowrap">
-        @for (int i = 0; i < @; i++)
+<header>
+    <div class="offcanvas offcanvas-end" tabindex="-1" data-bs-scroll="true" data-bs-backdrop="false" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel" slyle="width: 40%;">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" data-bs-scroll="true" id="offcanvasDarkNavbarLabel">Результаты поиска по поставщикам</h5>
+            <button type="button" class="btn-close btn-close-black" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+            </ul>
+            <form class="d-flex mt-3" role="search">
+                <input id="search-box" class="form-control" value="@SampleViewModel.Search" placeholder="Здесь будет поиск только по поставщикам @SampleViewModel.Search" type="text" style="padding: 5px">
+                <button class="btn btn-outline-dark" type="submit">Search</button>
+            </form>
+            <div class="accordion" id="accordionPanelsStayOpenExample">
+                
+                @foreach (var selectedShippers in Model.shippers)
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#panelsStayOpen-collapse@(i)" aria-expanded="true" style="padding-left: 12px;padding: 7px;"
+                            aria-controls="panelsStayOpen-collapseOne">
+                                @selectedShippers.Name: @selectedShippers.ResultCount
+                            </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapse@(i++)" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                                @foreach (var item in selectedShippers.SelectedElements)
+                                {
+                                    @await Html.PartialAsync("Element", item)
+                                }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</header>
+<h1> " "</h1>
+<ul class="list-group">
+    <li>
+        @foreach (var site in @Model.Sites)
         {
-            <div class="card" style="width: 280px;">
-                <img src="..." class="rounded mx-auto d-block" width="256" height="200">
-                <div class="card-body">
-                    <h5 class="card-title">Описание товара</h5>
-                    <p class="card-text">Нужно ли доп информация?</p>
-                    <a href="#" class="btn btn-primary">Ссылка на товар?</a>
+            <h4>@site.Name: @site.ResultCount</h4>
+
+            <div class="container" style="overflow-x: scroll; max-width: 100%; padding-top: 10px; padding-bottom: 10px">
+                <div class="row" style="flex-wrap: nowrap">
+                    @foreach (var card in @site.CardTemplates)
+                    {
+                        @await Html.PartialAsync("CardTemplate", card)
+                    }
                 </div>
             </div>
-        };
-    </div>
-</div>
+        }
+    </li>
 
-<h5>Результаты поиска с сайта 2</h5>
-
-<div class="container" style="overflow-x: scroll; max-width: 100%; padding-top: 20px; padding-bottom: 10px">
-    <div class="row" style="flex-wrap: nowrap">
-        @for (int i = 0; i < 6; i++)
-        {
-            <div class="card" style="width: 280px;">
-                <img src="..." class="rounded mx-auto d-block" width="256" height="200">
-                <div class="card-body">
-                    <h5 class="card-title">Описание товара</h5>
-                    <p class="card-text">Нужно ли доп информация?</p>
-                    <a href="#" class="btn btn-primary">Ссылка на товар?</a>
-                </div>
-            </div>
-        };
-    </div>
-</div>
-
-<h5>Результаты поиска с сайта 3</h5>
-
-<div class="container" style="overflow-x: scroll; max-width: 100%; padding-top: 20px; padding-bottom: 10px">
-    <div class="row" style="flex-wrap: nowrap">
-        @for (int i = 0; i < 6; i++)
-        {
-            <div class="card" style="width: 280px;">
-                <img src="..." class="rounded mx-auto d-block" width="256" height="200">
-                <div class="card-body">
-                    <h5 class="card-title">Описание товара</h5>
-                    <p class="card-text">Нужно ли доп информация?</p>
-                    <a href="#" class="btn btn-primary">Ссылка на товар?</a>
-                </div>
-            </div>
-        };
-    </div>
-</div>
+</ul>
